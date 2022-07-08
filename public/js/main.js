@@ -45,7 +45,7 @@ function renderProductos(data) {
                               <div class="card-body p-4">
                                   <div class="row d-flex justify-content-between align-items-center">
                                   <div class="col-md-2 col-lg-2 col-xl-2">
-                                      <img src="${elem.src}" alt="se esperaba una imagen"
+                                      <img src="${elem.image}" alt="se esperaba una imagen"
                                       class="img-fluid rounded-3">
                                   </div>
                                   <div class="col-md-3 col-lg-3 col-xl-3">
@@ -75,7 +75,7 @@ function addProduct(e) {
   const newProduct = {
     title: document.getElementById('title').value,
     price: document.getElementById('price').value,
-    src: document.getElementById('src').value,
+    image: document.getElementById('image').value,
     timeStamp: hora.toString(),
   }
   socket.emit('nuevo-producto', newProduct)
@@ -90,7 +90,10 @@ function renderUser(data) {
   const html = data
     .map((elem, index) => {
       return `
-            <h1 class="heading">${elem.user}</h1>
+            <a class="btn btn-outline-dark"  type="submit" href="/home">
+                <h9>Carrito de ${elem.user}</h9>
+                <p class="badge bg-dark text-white ms-1 rounded-pill" id="totalPrice" ></p>
+            </a>
             `
     })
     .join(' ')

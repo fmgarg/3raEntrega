@@ -8,6 +8,10 @@ const nombreArchivo = 'productos.json'
 
 let productos = []
 
+
+
+//console.log(productos)
+
 const newObjeto = {
     "title":"Pez Globo",                                                                                                                          
     "price": 345.67,                                                                                                                                     
@@ -31,11 +35,12 @@ class Contenedor {
                     useNewUrlParser: true, 
                     useUnifiedTopology: true
                     })
-                console.log('base de datos conectada')
+                //console.log('base de datos conectada')
 
             try {
                 
                 let response = await modelProducto.find()
+                //productos.push(response)
                 return response
 
                 /*
@@ -208,45 +213,57 @@ const items = new Contenedor ('productos.json');
 //Pto "A" esta ruta permite listar todos los productos 
 productosMg.get ('/', async (req, res)=>{
     let products = await items.getAll()
-    res.json(products)
+    fakeApi = ()=> products
+    //console.log(req.session.cookie.maxAge)
+    if(req.session.cookie.maxAge>=1){
+        res.render('home')//, {suggestedChamps: fakeApi(), listExists: true})
+    }else{
+        res.redirect('/login')
+    }
+})
+
+productosMg.get ('/landing', async (req, res)=>{
+    let products = await items.getAll()
+    
+    res.send(products)
 })
 
 //Pto "A" esta ruta permite listar un producto por ID 
 productosMg.get ('/:ID'
 
-,async function (req, res, next) {
-                                              
-    if (req.session.passport==undefined)
-    {
-      
-      res.redirect('/login')
-    
-    } else {
-      
+                        ,async function (req, res, next) {
+                                                                    
+                            if (req.session.passport==undefined)
+                            {
+                            
+                            res.redirect('/login')
+                            
+                            } else {
+                            
 
-      /*const id = req.session.passport['user']
+                            /*const id = req.session.passport['user']
 
-      const user = await User.findById (id)
-        
-      const userLogin = {user:{}}
-      userLogin['user']= user.nombre
-      userAdmin.push(userLogin)*/
+                            const user = await User.findById (id)
+                                
+                            const userLogin = {user:{}}
+                            userLogin['user']= user.nombre
+                            userAdmin.push(userLogin)*/
 
-      next ()
-    
-    }
-  }
+                            next ()
+                            
+                            }
+                        }
 
-, async (req, res)=>{
-    number = JSON.parse(req.params.ID)
-    //console.log(number)
-    let product = await items.getByID(number)
-    //aca modifico el objeto de mongo para poder trabajarlo y renderizarlo con hbs
-    let prod = JSON.stringify(product[0])
-    let prodParse = JSON.parse(prod)
-    //console.log(prodParse.id)
-    //aca renderizo el hbs Item con el partial itemDetail
-    res.render("item.hbs",{item: prodParse, listExists: true})
+                        , async (req, res)=>{
+                            number = JSON.parse(req.params.ID)
+                            //console.log(number)
+                            let product = await items.getByID(number)
+                            //aca modifico el objeto de mongo para poder trabajarlo y renderizarlo con hbs
+                            let prod = JSON.stringify(product[0])
+                            let prodParse = JSON.parse(prod)
+                            //console.log(prodParse.id)
+                            //aca renderizo el hbs Item con el partial itemDetail
+                            res.render("item.hbs",{item: prodParse, listExists: true})
 })
 
 //Pto "B" ADM esta ruta permite incorporar un producto al listado de productos, asignando un ID de producto y timeStamp

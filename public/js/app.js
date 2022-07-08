@@ -1,5 +1,5 @@
 
-const URL = '/app/productos'
+const URL = '/app/productos/landing'
 
 fetch (URL) 
 

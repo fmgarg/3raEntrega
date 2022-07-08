@@ -1,3 +1,5 @@
+const  fetch = require("node-fetch")
+
 const express = require('express')
 
 const { Server: IOServer } = require('socket.io')
@@ -70,7 +72,7 @@ log4js.configure({
 
 const mongoose = require ('mongoose')
 
-const User = require ('./modelUsers')
+const User = require ('./models/modelUsers')
 
 CRUD()
 
@@ -85,7 +87,6 @@ async function CRUD() {
                 useNewUrlParser: true
                ,useUnifiedTopology: true
               })
-              console.log('Base de datos conectada')
               /*,await User.create({
                                 username: 'FMG@gmail.com',
                                 password: '123456',
@@ -100,6 +101,7 @@ async function CRUD() {
                                 provincia: 'Aca',
                                 telefono: '1140003000'
               })*/
+              //,console.log('Base de datos conectada')
               //,console.log( await User.find())
               //,console.log( modelUsers.estimatedDocumentCount())
   } catch (e) {
@@ -147,9 +149,143 @@ async function getAll (){
 
 }
 
+//------------------PROMESAS-----------------------------//
+
+let productos = []
+
+asyncCall().catch(err => {
+  console.log(err);
+  });
+
+console.log(productos)
+
+async function asyncCall() {
+  let items = await fetch(`http://localhost:8080/app/productos/landing`
+                          ,{
+                              method:'GET',
+                              //body:null,
+                          })
+                          .then(res=>res.json());
+                              //console.log(items)
+                              //let itemsString = JSON.stringify(items)
+                              //let itemsParse = JSON.parse(itemsString)
+                         
+                              //let itemsV = {...items[2]}
+                              //console.log(itemsV)
+
+                              for (var i = 0; i<items.length; i++){
+                                productos.push(items[i])
+                              }
+
+                              ;
+
+                              console.log(productos)
+                             // console.log("done");
+}
+
+/*---FUNCA---let productos = fetch (`http://localhost:8080/app/productos/landing`);
+productos.then((res)=>{
+  return res.json()
+}).then((json)=>{
+   return json
+})*/
+
+/*
+async function getAllProducts() {
+                        const mongoose = require ('mongoose')
+                        const modelProducto = require ('./models/productoEsquema')
+                        const URL = process.env.MGATLAS//'mongodb://127.0.0.1:27017/ecommerce'
+                        let bddConnect = await mongoose.connect (
+                                                                  URL
+                                                                  , {
+                                                                    useNewUrlParser: true, 
+                                                                    useUnifiedTopology: true
+                                                                    })
+                                                                //console.log('base de datos conectada')
+                        try {
+                            let prods = await modelProducto.find()
+                            //console.log(productos)
+                            //productos.push(prods)
+                            return (prods)
+                        } catch (error) {
+                            console.log(`Error: ${error}`);
+                        }
+                      }*/
+
+/*
+async function asyncCall(){
+  try{
+  //console.log('estoy en try')
+  const resultado = await getAllProducts()
+  //console.log(resultado)
+  const resultString = await JSON.stringify (resultado)
+  //console.log(resultString)
+  //productos.push(resultado)
+  return await resultado
+  //resolve(resultado)
+  //console.log(resultado)//funciona ok, trae todos los productos//
+  }
+  catch (error){
+    console.log(`Error: ${error}`);
+  }
+}*/
+
+
+
+//const productos = asyncCall ().then(data =>{return data})
+//console.log(productos)
+//console.log(productos)
+
+/*async function prods () {
+    const response = await fetch ('http://localhost:8080/app/productos/landing');
+    const json = await response.json();
+    return json;
+  }*/
+
+/*const productos = prods().then(data => {
+    return JSON.stringify(data);
+}).catch(err => {
+    console.log(err);
+});*/
+
+//console.log(productos)
+
+
+
+/*
+let urls = [
+  'http://localhost:8080/app/productos/landing'
+];
+
+// map every url to the promise of the fetch
+let requests = urls.map(url => fetch(url));
+
+Promise.all(requests)
+  .then(responses => {
+    // all responses are resolved successfully
+    for(let response of responses) {
+      //console.log(`${response.url}: ${response.status}`); // shows 200 for every url
+    }
+    return responses;
+    })
+  // map array of responses into an array of response.json() to read their content
+  .then(responses => Promise.all(responses.map(r => r.json())))
+  // all JSON answers are parsed: "users" is the array of them
+  .then(products => products.forEach(product =>{ 
+    //productos.push(user)
+    let productB = [product]
+    //productos.push (user)
+    //console.log(productB)
+    return productB
+    }));
+*/
+//--------------FIN---PROMESAS-----------------------------//
+
+
+
 
 //-------importando el modulo Router---------------
-const productosRouter = require ('./routes/productosRouter')
+//const productosRouter = require ('./routes/productosRouter')
 
 const randomsRouter = require ('./routes/randomsRouter')
 
@@ -157,18 +293,26 @@ const productosMg = require ('./DAOs/productosMg')
 const carritoMg = require ('./DAOs/carritoMg')
 
 //----------importacion del arreglo de productos-------------
-const productos = require ('./routes/productosRouter') ['productos']
-//console.log(eventos)
+//const productos = require ('./routes/productosRouter') ['productos']
+
+//const productos = new Array 
+
+//console.log(productos)
+
+
 
 //---------------------------------SOCKETS-----------------------//
 const fs = require('fs');
 const { response } = require('express')
+const res = require("express/lib/response")
+const { resolve } = require("path")
+const { json } = require("express/lib/response")
 
 const userAdmin = []
 let messages = []
 
 io.on('connection', (socket) => {
-      console.log('socket connection')
+      //console.log('socket connection')
       socket.emit('socketUser', userAdmin)
       socket.emit('messages', messages)
       socket.emit('socketProductos', productos)
@@ -230,7 +374,12 @@ if (MODO === 'CLUSTER' && cluster.isPrimary) {
 
 } else {
           
-        httpServer.listen(port, () =>{ getAll(); console.log(`servidor levantado puerto:${port}`)})
+        httpServer.listen(port, () =>{ 
+                                      getAll()
+                                     // ,asyncCall()
+                                    //  , getAllProducts()
+                                      ; console.log(`servidor levantado puerto:${port}`)
+                                    })
 
 
           /*
@@ -453,7 +602,7 @@ if (MODO === 'CLUSTER' && cluster.isPrimary) {
                         
                         }
                       }
-                      ,productosRouter
+                      ,productosMg
         )
 
 

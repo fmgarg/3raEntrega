@@ -17,12 +17,12 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.methods.encryptPassword = function (password) {
-    console.log('password is encrypted')
+    //console.log('password is encrypted')
     return bcrypt.hashSync(password, bcrypt.genSaltSync(10),null);
 }
 
 userSchema.methods.comparePassword = function (password) {
-    console.log('password is compared')
+    //console.log('password is compared')
     return bcrypt.compareSync(password, this.password)
 }
 

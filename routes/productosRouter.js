@@ -13,6 +13,8 @@ let productos = [{"title":"tijera","price":"100","src":"https://fakestoreapi.com
             ]
 
 
+
+
 const newObjeto = {
     "title":"Pez Globo",                                                                                                                          
     "price": 345.67,                                                                                                                                     
